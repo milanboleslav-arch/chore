@@ -6,13 +6,15 @@ import { createClient } from "@/lib/supabase/client";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Users, Shield, User as UserIcon } from "lucide-react";
+import { User } from "@supabase/supabase-js";
 
 export default function JoinHousePage() {
     const { id: houseId } = useParams();
     const searchParams = useSearchParams();
     const invitedRole = searchParams.get("role") as 'child' | 'parent' | null;
 
-    const [house, setHouse] = useState<any>(null);
+    const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const [house, setHouse] = useState<{ name: string } | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [joining, setJoining] = useState(false);
@@ -21,21 +23,27 @@ export default function JoinHousePage() {
     const router = useRouter();
 
     useEffect(() => {
-        async function fetchHouse() {
-            const { data, error } = await supabase
+        async function fetchData() {
+            // Fetch House
+            const { data: houseData, error: houseError } = await supabase
                 .from("houses")
                 .select("name")
                 .eq("id", houseId)
                 .single();
 
-            if (error) {
+            if (houseError) {
                 setError("Rodina nebyla nalezena. Zkontrolujte prosím odkaz.");
             } else {
-                setHouse(data);
+                setHouse(houseData);
             }
+
+            // Fetch Current User
+            const { data: { user } } = await supabase.auth.getUser();
+            setCurrentUser(user);
+
             setLoading(false);
         }
-        fetchHouse();
+        fetchData();
     }, [houseId, supabase]);
 
     const handleJoin = useCallback(async (role: 'child' | 'parent') => {
@@ -49,6 +57,7 @@ export default function JoinHousePage() {
             return;
         }
 
+        // If user is already logged in, we update their profile
         const { error } = await supabase
             .from("profiles")
             .update({ house_id: houseId, role: role })
@@ -62,11 +71,10 @@ export default function JoinHousePage() {
         }
     }, [houseId, router, supabase]);
 
-    useEffect(() => {
-        if (invitedRole && !loading && houseId && !joining) {
-            handleJoin(invitedRole);
-        }
-    }, [invitedRole, loading, houseId, handleJoin, joining]);
+    const handleLogoutAndJoin = async () => {
+        await supabase.auth.signOut();
+        window.location.reload();
+    };
 
 
     if (loading) return <div className="min-h-screen flex items-center justify-center"><div className="w-10 h-10 border-4 border-t-violet-500 rounded-full animate-spin" /></div>;
@@ -93,11 +101,26 @@ export default function JoinHousePage() {
                 <h1 className="text-3xl font-bold font-outfit mb-2">Připojit se k rodině</h1>
                 <p className="text-violet-400 font-bold text-xl mb-8 tracking-tight">{house?.name}</p>
 
-                <p className="text-slate-400 mb-10 text-sm leading-relaxed">
+                <p className="text-slate-400 mb-6 text-sm leading-relaxed">
                     {invitedRole
                         ? `Byli jste pozváni jako ${invitedRole === 'child' ? 'Dítě' : 'Rodič'}. Chcete pokračovat?`
                         : "Byli jste pozváni do rodinného prostoru. Vyberte si svou roli pro pokračování:"}
                 </p>
+
+                {currentUser && (
+                    <div className="mb-8 p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-200 text-sm text-center">
+                        <p className="mb-2">Jste přihlášeni jako <strong>{currentUser.email}</strong>.</p>
+                        <p className="mb-4 opacity-80 text-xs text-slate-300">Pokud chcete vytvořit nový účet pro dítě na tomto zařízení, musíte se nejprve odhlásit.</p>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            className="w-full border-amber-500/30 hover:bg-amber-500/10 text-amber-200 h-9"
+                            onClick={handleLogoutAndJoin}
+                        >
+                            Odhlásit se a pokračovat jako někdo jiný
+                        </Button>
+                    </div>
+                )}
 
                 <div className="grid grid-cols-1 gap-4">
                     {(!invitedRole || invitedRole === 'child') && (

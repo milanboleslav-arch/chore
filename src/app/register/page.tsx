@@ -30,7 +30,7 @@ export default function RegisterPage() {
                 data: {
                     full_name: name,
                 },
-                emailRedirectTo: `${window.location.origin}/dashboard`,
+                emailRedirectTo: `${window.location.origin}/house/setup`,
             },
         });
 
@@ -89,7 +89,7 @@ export default function RegisterPage() {
                         )}
 
                         <div className="space-y-2">
-                            <label className="text-sm font-medium text-slate-300 ml-1">Jméno rodiče</label>
+                            <label className="text-sm font-medium text-slate-300 ml-1">Jméno</label>
                             <div className="relative">
                                 <Sparkles className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" />
                                 <input

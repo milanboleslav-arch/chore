@@ -18,27 +18,31 @@ export default function HouseSetupPage() {
             const houseId = localStorage.getItem("pending_house_id");
             const role = localStorage.getItem("pending_role") || "child";
 
-            const { data: { user } } = await supabase.auth.getUser();
-            if (!user) {
-                router.push("/login");
-                return;
-            }
-
-            if (houseId) {
-                // Auto join
-                const { error } = await supabase
-                    .from("profiles")
-                    .update({ house_id: houseId, role: role })
-                    .eq("id", user.id);
-
-                if (!error) {
-                    localStorage.removeItem("pending_house_id");
-                    localStorage.removeItem("pending_role");
-                    router.push("/dashboard");
+            try {
+                const { data: { user }, error: userError } = await supabase.auth.getUser();
+                if (userError || !user) {
+                    router.push("/login");
                     return;
                 }
+
+                if (houseId) {
+                    const { error } = await supabase
+                        .from("profiles")
+                        .update({ house_id: houseId, role: role })
+                        .eq("id", user.id);
+
+                    if (!error) {
+                        localStorage.removeItem("pending_house_id");
+                        localStorage.removeItem("pending_role");
+                        router.push("/dashboard");
+                        return;
+                    }
+                }
+                setLoading(false);
+            } catch (err) {
+                console.error("Auth error:", err);
+                router.push("/login");
             }
-            setLoading(false);
         }
         checkPendingInvite();
     }, [supabase, router]);

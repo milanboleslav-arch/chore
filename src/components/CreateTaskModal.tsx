@@ -21,6 +21,7 @@ export const CreateTaskModal = ({ isOpen, onClose, houseId, onTaskCreated }: Cre
     const [punishment, setPunishment] = useState("");
     const [deadline, setDeadline] = useState("");
     const [requiresProof, setRequiresProof] = useState(false);
+    const [notifyAllParents, setNotifyAllParents] = useState(false);
     const [assignedTo, setAssignedTo] = useState("");
     const [loading, setLoading] = useState(false);
     const [members, setMembers] = useState<any[]>([]);
@@ -55,6 +56,7 @@ export const CreateTaskModal = ({ isOpen, onClose, houseId, onTaskCreated }: Cre
             punishment_desc: punishment,
             deadline: deadline ? new Date(deadline).toISOString() : null,
             requires_proof: requiresProof,
+            notify_all_parents: notifyAllParents,
             assigned_to: assignedTo || null,
             created_by: user.id,
             status: "todo"
@@ -72,6 +74,7 @@ export const CreateTaskModal = ({ isOpen, onClose, houseId, onTaskCreated }: Cre
             setPunishment("");
             setDeadline("");
             setRequiresProof(false);
+            setNotifyAllParents(false);
         }
         setLoading(false);
     };
@@ -183,15 +186,27 @@ export const CreateTaskModal = ({ isOpen, onClose, houseId, onTaskCreated }: Cre
                                     </select>
                                 </div>
 
-                                <label className="flex items-center gap-3 cursor-pointer group w-fit">
-                                    <div
-                                        onClick={() => setRequiresProof(!requiresProof)}
-                                        className={`w-6 h-6 rounded-md border flex items-center justify-center transition-colors ${requiresProof ? 'bg-cyan-500 border-cyan-500' : 'border-white/10 bg-white/5 group-hover:border-cyan-500/50'}`}
-                                    >
-                                        {requiresProof && <Camera className="w-4 h-4 text-white" />}
-                                    </div>
-                                    <span className="text-sm text-slate-300">Vyžadovat fotodůkaz</span>
-                                </label>
+                                <div className="flex flex-wrap gap-6">
+                                    <label className="flex items-center gap-3 cursor-pointer group w-fit">
+                                        <div
+                                            onClick={() => setRequiresProof(!requiresProof)}
+                                            className={`w-6 h-6 rounded-md border flex items-center justify-center transition-colors ${requiresProof ? 'bg-cyan-500 border-cyan-500' : 'border-white/10 bg-white/5 group-hover:border-cyan-500/50'}`}
+                                        >
+                                            {requiresProof && <Camera className="w-4 h-4 text-white" />}
+                                        </div>
+                                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Vyžadovat fotku</span>
+                                    </label>
+
+                                    <label className="flex items-center gap-3 cursor-pointer group w-fit">
+                                        <div
+                                            onClick={() => setNotifyAllParents(!notifyAllParents)}
+                                            className={`w-6 h-6 rounded-md border flex items-center justify-center transition-colors ${notifyAllParents ? 'bg-violet-600 border-violet-600' : 'border-white/10 bg-white/5 group-hover:border-violet-600/50'}`}
+                                        >
+                                            {notifyAllParents && <div className="w-2 h-2 bg-white rounded-full" />}
+                                        </div>
+                                        <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">Upozornit všechny rodiče</span>
+                                    </label>
+                                </div>
 
                                 <Button type="submit" className="w-full h-14 text-lg" loading={loading}>
                                     Vytvořit Quest

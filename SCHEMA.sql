@@ -31,6 +31,8 @@ CREATE TABLE tasks (
   created_by UUID REFERENCES profiles(id),
   requires_proof BOOLEAN DEFAULT FALSE,
   proof_url TEXT,
+  notify_all_parents BOOLEAN DEFAULT FALSE,
+  rejection_reason TEXT,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -42,30 +44,21 @@ ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
 
 -- Policies for Houses
-CREATE POLICY "Users can see their own house" 
+CREATE POLICY "Anyone can see house name if they have ID" 
   ON houses FOR SELECT 
-  USING (
-    EXISTS (
-      SELECT 1 FROM profiles 
-      WHERE profiles.id = auth.uid() AND profiles.house_id = houses.id
-    ) OR owner_id = auth.uid()
-  );
+  USING (true);
 
 -- Policies for Profiles
-CREATE POLICY "Users can see profiles from the same house" 
+CREATE POLICY "Users can see own profile or house members" 
   ON profiles FOR SELECT 
   USING (
+    id = auth.uid() OR 
     house_id = (SELECT house_id FROM profiles WHERE id = auth.uid())
   );
 
-CREATE POLICY "Parents can update profiles in their house" 
+CREATE POLICY "Users can update their own profile" 
   ON profiles FOR UPDATE 
-  USING (
-    EXISTS (
-      SELECT 1 FROM profiles 
-      WHERE id = auth.uid() AND role = 'parent'
-    )
-  );
+  USING (id = auth.uid());
 
 -- Policies for Tasks
 CREATE POLICY "Users can see tasks in their house" 

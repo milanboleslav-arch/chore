@@ -101,6 +101,8 @@ export const InviteModal = ({ isOpen, onClose, houseId, houseName }: InviteModal
 
                             <p className="text-[10px] text-center text-slate-500 mt-6 leading-relaxed">
                                 Tento kód pozve uživatele s rolí <span className="text-violet-400 font-bold uppercase">{role === 'child' ? 'Dítě' : 'Rodič'}</span>.
+                                <br />
+                                <span className="opacity-60 italic mt-1 block">Pokud kód skenujete na stejném zařízení, je nutné se nejprve odhlásit.</span>
                             </p>
                         </Card>
                     </motion.div>
