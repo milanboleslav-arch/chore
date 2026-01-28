@@ -16,7 +16,8 @@ import {
     UserPlus,
     Camera,
     Calendar,
-    Image as ImageIcon
+    Image as ImageIcon,
+    Trash2
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
@@ -186,6 +187,22 @@ export default function DashboardPage() {
 
         if (error) alert("Neplatný formát data.");
         if (profile?.house_id) await loadTasks(profile.house_id);
+    };
+
+    const handleDeleteTask = async (taskId: string) => {
+        const confirmDelete = window.confirm("Opravdu chcete tento úkol smazat? Tato akce je nevratná.");
+        if (!confirmDelete) return;
+
+        const { error } = await supabase
+            .from("tasks")
+            .delete()
+            .eq("id", taskId);
+
+        if (error) {
+            alert("Chyba při mazání: " + error.message);
+        } else {
+            if (profile?.house_id) await loadTasks(profile.house_id);
+        }
     };
 
     const handleApproveTask = async (task: any) => {
@@ -466,7 +483,7 @@ export default function DashboardPage() {
                                             className="flex items-center gap-1.5 hover:text-white transition-colors bg-white/5 py-1 px-2 rounded-md hover:bg-white/10"
                                         >
                                             <Calendar className="w-3 h-3 text-cyan-400" />
-                                            <span>Synchronizovat</span>
+                                            <span>Přidat do kalendáře</span>
                                         </button>
 
                                         {task.status === 'pending_approval' && (
@@ -556,13 +573,22 @@ export default function DashboardPage() {
                                         )}
 
                                         {profile?.role === 'parent' && (
-                                            <Button
-                                                variant="ghost"
-                                                className="w-10 h-10 p-0 rounded-lg hover:bg-white/10"
-                                                onClick={() => handleExtendDeadline(task.id)}
-                                            >
-                                                <Clock className="w-4 h-4" />
-                                            </Button>
+                                            <div className="flex gap-1">
+                                                <Button
+                                                    variant="ghost"
+                                                    className="w-10 h-10 p-0 rounded-lg hover:bg-white/10"
+                                                    onClick={() => handleExtendDeadline(task.id)}
+                                                >
+                                                    <Clock className="w-4 h-4" />
+                                                </Button>
+                                                <Button
+                                                    variant="ghost"
+                                                    className="w-10 h-10 p-0 rounded-lg hover:bg-red-500/10 text-red-500"
+                                                    onClick={() => handleDeleteTask(task.id)}
+                                                >
+                                                    <Trash2 className="w-4 h-4" />
+                                                </Button>
+                                            </div>
                                         )}
                                     </div>
                                 </Card>
