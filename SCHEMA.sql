@@ -8,7 +8,7 @@ CREATE TABLE houses (
 
 -- 2. Create Profiles table (linked to Auth.Users)
 CREATE TABLE profiles (
-  id UUID PRIMARY KEY REFERENCES auth.users(id),
+  id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   full_name TEXT,
   role TEXT DEFAULT 'child', -- 'parent' or 'child'
   house_id UUID REFERENCES houses(id),
@@ -27,8 +27,8 @@ CREATE TABLE tasks (
   punishment_desc TEXT,
   deadline TIMESTAMP WITH TIME ZONE,
   status TEXT DEFAULT 'todo', -- 'todo', 'pending_approval', 'done', 'failed'
-  assigned_to UUID REFERENCES profiles(id),
-  created_by UUID REFERENCES profiles(id),
+  assigned_to UUID REFERENCES profiles(id) ON DELETE SET NULL,
+  created_by UUID REFERENCES profiles(id) ON DELETE SET NULL,
   requires_proof BOOLEAN DEFAULT FALSE,
   proof_url TEXT,
   notify_all_parents BOOLEAN DEFAULT FALSE,

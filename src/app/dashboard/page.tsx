@@ -17,13 +17,15 @@ import {
     Camera,
     Calendar,
     Image as ImageIcon,
-    Trash2
+    Trash2,
+    Pencil
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { InviteModal } from "@/components/InviteModal";
 import { CreateTaskModal } from "@/components/CreateTaskModal";
+import { EditTaskModal } from "@/components/EditTaskModal";
 
 export default function DashboardPage() {
     const [user, setUser] = useState<any>(null);
@@ -34,6 +36,8 @@ export default function DashboardPage() {
     const [error, setError] = useState<string | null>(null);
     const [isInviteOpen, setIsInviteOpen] = useState(false);
     const [isCreateTaskOpen, setIsCreateTaskOpen] = useState(false);
+    const [isEditTaskOpen, setIsEditTaskOpen] = useState(false);
+    const [editingTask, setEditingTask] = useState<any>(null);
     const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'done' | 'failed'>('all');
     const [filterChildId, setFilterChildId] = useState<string>('all');
 
@@ -66,7 +70,7 @@ export default function DashboardPage() {
             }
             setUser(user);
 
-            const { data: profileData, error: profileError } = await supabase
+            let { data: profileData, error: profileError } = await supabase
                 .from("profiles")
                 .select("*")
                 .eq("id", user.id)
@@ -77,6 +81,30 @@ export default function DashboardPage() {
                 setError(`Profil nebyl nalezen. (Detaily: ${JSON.stringify(profileError)}). Zkontrolujte prosím e-mail.`);
                 setLoading(false);
                 return;
+            }
+
+            // Check for pending house join from invitation
+            const pendingHouseId = localStorage.getItem("pending_house_id");
+            const pendingRole = localStorage.getItem("pending_role");
+
+            if (pendingHouseId && user && !profileData.house_id) {
+                console.log("Finishing pending join for house:", pendingHouseId);
+                const { error: joinError } = await supabase
+                    .from("profiles")
+                    .update({ house_id: pendingHouseId, role: pendingRole || 'child' })
+                    .eq("id", user.id);
+
+                if (!joinError) {
+                    localStorage.removeItem("pending_house_id");
+                    localStorage.removeItem("pending_role");
+                    // Refetch profile data to get the new house_id
+                    const { data: updatedProfile } = await supabase
+                        .from("profiles")
+                        .select("*")
+                        .eq("id", user.id)
+                        .single();
+                    if (updatedProfile) profileData = updatedProfile;
+                }
             }
 
             if (profileData.house_id) {
@@ -581,6 +609,18 @@ export default function DashboardPage() {
                                                 >
                                                     <Clock className="w-4 h-4" />
                                                 </Button>
+                                                {task.status !== 'done' && (
+                                                    <Button
+                                                        variant="ghost"
+                                                        className="w-10 h-10 p-0 rounded-lg hover:bg-white/10 text-cyan-400"
+                                                        onClick={() => {
+                                                            setEditingTask(task);
+                                                            setIsEditTaskOpen(true);
+                                                        }}
+                                                    >
+                                                        <Pencil className="w-4 h-4" />
+                                                    </Button>
+                                                )}
                                                 <Button
                                                     variant="ghost"
                                                     className="w-10 h-10 p-0 rounded-lg hover:bg-red-500/10 text-red-500"
@@ -605,6 +645,16 @@ export default function DashboardPage() {
                     </AnimatePresence>
                 </div>
             </main>
+            <EditTaskModal
+                isOpen={isEditTaskOpen}
+                onClose={() => {
+                    setIsEditTaskOpen(false);
+                    setEditingTask(null);
+                }}
+                houseId={profile?.house_id}
+                onTaskUpdated={() => loadTasks(profile.house_id)}
+                task={editingTask}
+            />
         </div>
     );
 }
