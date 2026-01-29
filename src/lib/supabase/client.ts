@@ -11,5 +11,12 @@ export function createClient() {
         return {} as any;
     }
 
-    return createBrowserClient(url, key);
+    return createBrowserClient(url, key, {
+        auth: {
+            persistSession: true,
+            autoRefreshToken: true,
+            detectSessionInUrl: true,
+            flowType: 'pkce',
+        }
+    });
 }

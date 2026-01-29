@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { motion } from "framer-motion";
@@ -17,6 +20,19 @@ import {
 import Link from "next/link";
 
 export default function LandingPage() {
+  const router = useRouter();
+  const supabase = createClient();
+
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        router.push("/dashboard");
+      }
+    };
+    checkUser();
+  }, [supabase, router]);
+
   const container = {
     hidden: { opacity: 0 },
     show: {
@@ -77,9 +93,11 @@ export default function LandingPage() {
         </p>
 
         <div className="flex flex-wrap justify-center gap-4">
-          <Button size="lg" className="h-16 px-10 text-xl">
-            Začít zdarma
-          </Button>
+          <Link href="/register">
+            <Button size="lg" className="h-16 px-10 text-xl">
+              Začít zdarma
+            </Button>
+          </Link>
           <Button variant="outline" size="lg" className="h-16 px-10 text-xl">
             Jak to funguje?
           </Button>
