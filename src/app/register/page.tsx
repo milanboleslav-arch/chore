@@ -6,7 +6,7 @@ import { Card } from "@/components/ui/Card";
 import { Gamepad2, Mail, Lock, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function RegisterPage() {
     const [email, setEmail] = useState("");
@@ -18,6 +18,10 @@ export default function RegisterPage() {
     const [checkEmail, setCheckEmail] = useState(false);
     const supabase = createClient();
     const router = useRouter();
+    const searchParams = useSearchParams();
+
+    const invitedHouseId = searchParams.get("house_id");
+    const invitedRole = searchParams.get("role");
 
     useEffect(() => {
         const checkSession = async () => {
@@ -46,6 +50,11 @@ export default function RegisterPage() {
         setLoading(true);
         setError(null);
 
+        // Build redirect URL with pending house info
+        const redirectUrl = new URL(`${window.location.origin}/house/setup`);
+        if (invitedHouseId) redirectUrl.searchParams.set("house_id", invitedHouseId);
+        if (invitedRole) redirectUrl.searchParams.set("role", invitedRole);
+
         const { error: signUpError } = await supabase.auth.signUp({
             email,
             password,
@@ -53,7 +62,7 @@ export default function RegisterPage() {
                 data: {
                     full_name: name,
                 },
-                emailRedirectTo: `${window.location.origin}/house/setup`,
+                emailRedirectTo: redirectUrl.toString(),
             },
         });
 
@@ -79,6 +88,12 @@ export default function RegisterPage() {
                         Na adresu <span className="text-white font-bold">{email}</span> jsme odeslali potvrzovací odkaz.
                         Klikněte na něj pro aktivaci účtu.
                     </p>
+                    {typeof window !== "undefined" && window.location.hostname === "localhost" && (
+                        <div className="mb-6 p-4 bg-amber-500/10 border border-amber-500/20 rounded-xl text-xs text-amber-200 text-left">
+                            <p className="font-bold mb-1">Důležité upozornění:</p>
+                            Pokud tento e-mail otevřete na mobilu, potvrzovací odkaz nebude fungovat (protože odkazuje na <code>localhost</code>). Pro testování na mobilu se musíte registrovat přes IP adresu vašeho počítače.
+                        </div>
+                    )}
                     <Button onClick={() => router.push("/login")} variant="outline" className="w-full border-white/10">
                         Přejít na přihlášení
                     </Button>
@@ -100,7 +115,11 @@ export default function RegisterPage() {
                         <span className="text-3xl font-bold font-outfit uppercase tracking-tighter">Chore</span>
                     </Link>
                     <h1 className="text-3xl font-bold font-outfit mb-2">Vytvořte si účet</h1>
-                    <p className="text-slate-400">Začněte spravovat svůj dům hned teď</p>
+                    {invitedHouseId ? (
+                        <p className="text-violet-400 font-bold">Chystáte se připojit k rodině</p>
+                    ) : (
+                        <p className="text-slate-400">Začněte spravovat svůj dům hned teď</p>
+                    )}
                 </div>
 
                 <Card className="p-8">

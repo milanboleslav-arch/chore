@@ -54,7 +54,7 @@ export default function JoinHousePage() {
         if (!user) {
             localStorage.setItem("pending_house_id", houseId as string);
             localStorage.setItem("pending_role", role);
-            router.push("/register");
+            router.push(`/register?house_id=${houseId}&role=${role}`);
             return;
         }
 
