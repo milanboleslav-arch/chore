@@ -15,8 +15,12 @@ export default function HouseSetupPage() {
 
     useEffect(() => {
         async function checkPendingInvite() {
-            const houseId = localStorage.getItem("pending_house_id");
-            const role = localStorage.getItem("pending_role") || "child";
+            const searchParams = new URLSearchParams(window.location.search);
+            const queryHouseId = searchParams.get("house_id");
+            const queryRole = searchParams.get("role");
+
+            const houseId = queryHouseId || localStorage.getItem("pending_house_id");
+            const role = queryRole || localStorage.getItem("pending_role") || "child";
 
             try {
                 const { data: { user }, error: userError } = await supabase.auth.getUser();

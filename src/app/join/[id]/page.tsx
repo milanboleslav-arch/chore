@@ -79,14 +79,16 @@ export default function JoinHousePage() {
 
     const handleSocialLogin = async (provider: 'google') => {
         setSocialLoading(provider);
-        // Save intent to localStorage so we can finish joining after redirect
+        // Save intent to localStorage as fallback
         localStorage.setItem("pending_house_id", houseId as string);
         localStorage.setItem("pending_role", invitedRole || 'child');
 
+        // Robust way: pass redirect info through the URL
+        const nextPath = `/dashboard?house_id=${houseId}&role=${invitedRole || 'child'}`;
         const { error } = await supabase.auth.signInWithOAuth({
             provider,
             options: {
-                redirectTo: `${window.location.origin}/auth/callback`,
+                redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`,
             },
         });
         if (error) {

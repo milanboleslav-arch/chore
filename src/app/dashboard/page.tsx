@@ -83,9 +83,13 @@ export default function DashboardPage() {
                 return;
             }
 
-            // Check for pending house join from invitation
-            const pendingHouseId = localStorage.getItem("pending_house_id");
-            const pendingRole = localStorage.getItem("pending_role");
+            // Check for pending house join from invitation (both localStorage and Query Params)
+            const searchParams = new URLSearchParams(window.location.search);
+            const queryHouseId = searchParams.get("house_id");
+            const queryRole = searchParams.get("role");
+
+            const pendingHouseId = queryHouseId || localStorage.getItem("pending_house_id");
+            const pendingRole = queryRole || localStorage.getItem("pending_role");
 
             if (pendingHouseId && user && !profileData.house_id) {
                 console.log("Finishing pending join for house:", pendingHouseId);
@@ -104,6 +108,14 @@ export default function DashboardPage() {
                         .eq("id", user.id)
                         .single();
                     if (updatedProfile) profileData = updatedProfile;
+
+                    // Clear query params from URL without refreshing
+                    const url = new URL(window.location.href);
+                    url.searchParams.delete("house_id");
+                    url.searchParams.delete("role");
+                    window.history.replaceState({}, "", url.toString());
+                } else {
+                    console.error("Join error:", joinError);
                 }
             }
 

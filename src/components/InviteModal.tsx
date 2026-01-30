@@ -60,6 +60,11 @@ export const InviteModal = ({ isOpen, onClose, houseId, houseName }: InviteModal
                                 </div>
                                 <h2 className="text-2xl font-bold font-outfit">Pozvat člena</h2>
                                 <p className="text-sm text-slate-400 mt-1">{houseName}</p>
+                                {typeof window !== "undefined" && window.location.hostname === "localhost" && (
+                                    <div className="mt-4 p-2 bg-amber-500/10 border border-amber-500/20 rounded-lg text-[10px] text-amber-200 leading-tight">
+                                        <strong>Pozor:</strong> Jste na <code>localhost</code>. QR kód nemusí v telefonu fungovat. Pro testování na mobilu použijte IP adresu vašeho počítače.
+                                    </div>
+                                )}
                             </div>
 
                             {/* Role Selector */}
