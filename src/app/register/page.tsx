@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Gamepad2, Mail, Lock, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, getSiteUrl } from "@/lib/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export default function RegisterPage() {
@@ -33,10 +33,11 @@ export default function RegisterPage() {
 
     const handleSocialLogin = async (provider: 'google') => {
         setSocialLoading(provider);
+        const siteUrl = getSiteUrl();
         const { error } = await supabase.auth.signInWithOAuth({
             provider,
             options: {
-                redirectTo: `${window.location.origin}/auth/callback`,
+                redirectTo: `${siteUrl}/auth/callback`,
             },
         });
         if (error) {
@@ -51,7 +52,8 @@ export default function RegisterPage() {
         setError(null);
 
         // Build redirect URL with pending house info
-        const redirectUrl = new URL(`${window.location.origin}/house/setup`);
+        const siteUrl = getSiteUrl();
+        const redirectUrl = new URL(`${siteUrl}/house/setup`);
         if (invitedHouseId) redirectUrl.searchParams.set("house_id", invitedHouseId);
         if (invitedRole) redirectUrl.searchParams.set("role", invitedRole);
 

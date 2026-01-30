@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Gamepad2, Mail, Lock } from "lucide-react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, getSiteUrl } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
@@ -46,10 +46,11 @@ export default function LoginPage() {
 
     const handleSocialLogin = async (provider: 'google') => {
         setSocialLoading(provider);
+        const siteUrl = getSiteUrl();
         const { error } = await supabase.auth.signInWithOAuth({
             provider,
             options: {
-                redirectTo: `${window.location.origin}/auth/callback`,
+                redirectTo: `${siteUrl}/auth/callback`,
             },
         });
         if (error) {

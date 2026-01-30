@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Gamepad2, Mail, ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, getSiteUrl } from "@/lib/supabase/client";
 
 export default function ForgotPasswordPage() {
     const [email, setEmail] = useState("");
@@ -20,8 +20,9 @@ export default function ForgotPasswordPage() {
         setError(null);
         setMessage(null);
 
+        const siteUrl = getSiteUrl();
         const { error: resetError } = await supabase.auth.resetPasswordForEmail(email, {
-            redirectTo: `${window.location.origin}/reset-password`,
+            redirectTo: `${siteUrl}/reset-password`,
         });
 
         if (resetError) {

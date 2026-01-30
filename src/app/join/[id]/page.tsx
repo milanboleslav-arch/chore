@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
+import { createClient, getSiteUrl } from "@/lib/supabase/client";
 import { Card } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Users, Shield, User as UserIcon } from "lucide-react";
@@ -84,11 +84,12 @@ export default function JoinHousePage() {
         localStorage.setItem("pending_role", invitedRole || 'child');
 
         // Robust way: pass redirect info through the URL
+        const siteUrl = getSiteUrl();
         const nextPath = `/dashboard?house_id=${houseId}&role=${invitedRole || 'child'}`;
         const { error } = await supabase.auth.signInWithOAuth({
             provider,
             options: {
-                redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`,
+                redirectTo: `${siteUrl}/auth/callback?next=${encodeURIComponent(nextPath)}`,
             },
         });
         if (error) {
