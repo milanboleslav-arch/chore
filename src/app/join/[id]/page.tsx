@@ -8,7 +8,9 @@ import { Button } from "@/components/ui/Button";
 import { Users, Shield, User as UserIcon } from "lucide-react";
 import { User } from "@supabase/supabase-js";
 
-export default function JoinHousePage() {
+import { Suspense } from "react";
+
+function JoinHousePageContent() {
     const { id: houseId } = useParams();
     const searchParams = useSearchParams();
     const invitedRole = searchParams.get("role") as 'child' | 'parent' | null;
@@ -213,6 +215,14 @@ export default function JoinHousePage() {
                 )}
             </Card>
         </div>
+    );
+}
+
+export default function JoinHousePage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-10 h-10 border-4 border-t-violet-500 rounded-full animate-spin" /></div>}>
+            <JoinHousePageContent />
+        </Suspense>
     );
 }
 

@@ -7,8 +7,9 @@ import { Gamepad2, Mail, Lock, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { createClient, getSiteUrl } from "@/lib/supabase/client";
 import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-export default function RegisterPage() {
+function RegisterPageContent() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [name, setName] = useState("");
@@ -216,5 +217,13 @@ export default function RegisterPage() {
                 </Card>
             </div>
         </div>
+    );
+}
+
+export default function RegisterPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-10 h-10 border-4 border-t-violet-500 rounded-full animate-spin" /></div>}>
+            <RegisterPageContent />
+        </Suspense>
     );
 }
