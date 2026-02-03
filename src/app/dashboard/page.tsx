@@ -502,6 +502,9 @@ export default function DashboardPage() {
                         </div>
                         <div>
                             <p className="font-bold text-amber-200">Stav oznámení: {notificationStatus}</p>
+                            <p className="text-[10px] text-amber-500/80">
+                                VAPID Klíč: {process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ? `Nalezen (${process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY.substring(0, 5)}...)` : "NENALEZEN!"}
+                            </p>
                             <p className="text-xs text-amber-500/80">Pro zasílání úkolů musíte povolit upozornění.</p>
                         </div>
                     </div>
