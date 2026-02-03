@@ -48,17 +48,22 @@ export default function DashboardPage() {
     const router = useRouter();
 
     const handleEnableNotifications = async () => {
-        const granted = await requestNotificationPermission();
-        if (granted) {
-            const success = await subscribeToPush();
-            if (success) {
-                setNotificationStatus('granted');
-                alert('Upozornění byla úspěšně zapnuta!');
+        try {
+            const granted = await requestNotificationPermission();
+            if (granted) {
+                const response = await subscribeToPush();
+                if (response === true) {
+                    setNotificationStatus('granted');
+                    alert('Upozornění byla úspěšně zapnuta!');
+                } else {
+                    // response contains the error message
+                    alert(`Chyba registrace: ${JSON.stringify(response)}`);
+                }
             } else {
-                alert('Nepodařilo se přihlásit k odběru upozornění. Zkontrolujte VAPID klíč v .env.');
+                alert('Pro zasílání upozornění musíte povolit oprávnění v prohlížeči.');
             }
-        } else {
-            alert('Pro zasílání upozornění musíte povolit oprávnění v prohlížeči.');
+        } catch (err: any) {
+            alert(`Kritická chyba: ${err.message}`);
         }
     };
 

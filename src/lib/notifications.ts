@@ -63,9 +63,9 @@ export async function subscribeToPush() {
         }
 
         return true;
-    } catch (error) {
+    } catch (error: any) {
         console.error('Push subscription failed:', error);
-        return false;
+        return error.message || error;
     }
 }
 
