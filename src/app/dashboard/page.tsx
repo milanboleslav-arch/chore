@@ -63,9 +63,19 @@ export default function DashboardPage() {
     };
 
     useEffect(() => {
-        if (typeof window !== 'undefined' && 'Notification' in window) {
-            setNotificationStatus(Notification.permission);
-        }
+        const checkPermission = () => {
+            if (typeof window !== 'undefined') {
+                if ('Notification' in window) {
+                    setNotificationStatus(Notification.permission);
+                } else {
+                    setNotificationStatus('unsupported');
+                }
+            }
+        };
+        checkPermission();
+        // Kontrola i po krátké prodlevě (iOS fix)
+        const timer = setTimeout(checkPermission, 1000);
+        return () => clearTimeout(timer);
     }, []);
 
     const loadTasks = async (houseId: string) => {
@@ -381,14 +391,14 @@ export default function DashboardPage() {
                     <div className="flex items-center gap-2 md:gap-4">
                         {notificationStatus !== 'granted' && (
                             <Button
-                                variant="ghost"
+                                variant="outline"
                                 size="sm"
                                 onClick={handleEnableNotifications}
-                                className="w-10 h-10 p-0 rounded-full hover:bg-violet-500/10 text-violet-400 group relative"
-                                title="Zapnout upozornění"
+                                className="border-amber-500/50 bg-amber-500/10 text-amber-400 gap-2 px-3 relative"
                             >
-                                <Bell className="w-5 h-5" />
-                                <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                                <Bell className="w-4 h-4" />
+                                <span className="hidden sm:inline">Notifikace</span>
+                                <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-ping" />
                             </Button>
                         )}
                         {profile?.role === 'parent' && (
