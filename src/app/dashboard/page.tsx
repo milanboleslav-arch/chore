@@ -18,7 +18,8 @@ import {
     Calendar,
     Image as ImageIcon,
     Trash2,
-    Pencil
+    Pencil,
+    Bell
 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
@@ -26,6 +27,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { InviteModal } from "@/components/InviteModal";
 import { CreateTaskModal } from "@/components/CreateTaskModal";
 import { EditTaskModal } from "@/components/EditTaskModal";
+import { requestNotificationPermission, subscribeToPush } from "@/lib/notifications";
 
 export default function DashboardPage() {
     const [user, setUser] = useState<any>(null);
@@ -40,9 +42,31 @@ export default function DashboardPage() {
     const [editingTask, setEditingTask] = useState<any>(null);
     const [filterStatus, setFilterStatus] = useState<'all' | 'active' | 'done' | 'failed'>('all');
     const [filterChildId, setFilterChildId] = useState<string>('all');
+    const [notificationStatus, setNotificationStatus] = useState<string>('default');
 
     const supabase = createClient();
     const router = useRouter();
+
+    const handleEnableNotifications = async () => {
+        const granted = await requestNotificationPermission();
+        if (granted) {
+            const success = await subscribeToPush();
+            if (success) {
+                setNotificationStatus('granted');
+                alert('Upozornění byla úspěšně zapnuta!');
+            } else {
+                alert('Nepodařilo se přihlásit k odběru upozornění. Zkontrolujte VAPID klíč v .env.');
+            }
+        } else {
+            alert('Pro zasílání upozornění musíte povolit oprávnění v prohlížeči.');
+        }
+    };
+
+    useEffect(() => {
+        if (typeof window !== 'undefined' && 'Notification' in window) {
+            setNotificationStatus(Notification.permission);
+        }
+    }, []);
 
     const loadTasks = async (houseId: string) => {
         const { data: tasks } = await supabase
@@ -355,6 +379,18 @@ export default function DashboardPage() {
                     </div>
 
                     <div className="flex items-center gap-2 md:gap-4">
+                        {notificationStatus !== 'granted' && (
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={handleEnableNotifications}
+                                className="w-10 h-10 p-0 rounded-full hover:bg-violet-500/10 text-violet-400 group relative"
+                                title="Zapnout upozornění"
+                            >
+                                <Bell className="w-5 h-5" />
+                                <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                            </Button>
+                        )}
                         {profile?.role === 'parent' && (
                             <Button variant="outline" size="sm" onClick={() => setIsInviteOpen(true)} className="hidden md:flex border-violet-500/20 hover:bg-violet-500/10 text-violet-400">
                                 <UserPlus className="w-4 h-4 mr-2" /> Pozvat

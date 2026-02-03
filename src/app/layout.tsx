@@ -30,6 +30,8 @@ export const viewport: Viewport = {
   maximumScale: 1,
 };
 
+import { PWAProvider } from "@/components/PWAContext";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -40,10 +42,12 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${outfit.variable} font-sans antialiased bg-[#0f111a] text-slate-100`}
       >
-        <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(139,92,246,0.15),transparent_50%)] pointer-events-none" />
-        <main className="relative min-h-screen">
-          {children}
-        </main>
+        <PWAProvider>
+          <div className="fixed inset-0 bg-[radial-gradient(circle_at_50%_0%,rgba(139,92,246,0.15),transparent_50%)] pointer-events-none" />
+          <main className="relative min-h-screen">
+            {children}
+          </main>
+        </PWAProvider>
       </body>
     </html>
   );
