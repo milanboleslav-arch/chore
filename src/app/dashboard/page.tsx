@@ -68,19 +68,9 @@ export default function DashboardPage() {
     };
 
     useEffect(() => {
-        const checkPermission = () => {
-            if (typeof window !== 'undefined') {
-                if ('Notification' in window) {
-                    setNotificationStatus(Notification.permission);
-                } else {
-                    setNotificationStatus('unsupported');
-                }
-            }
-        };
-        checkPermission();
-        // Kontrola i po krátké prodlevě (iOS fix)
-        const timer = setTimeout(checkPermission, 1000);
-        return () => clearTimeout(timer);
+        if (typeof window !== 'undefined' && 'Notification' in window) {
+            setNotificationStatus(Notification.permission);
+        }
     }, []);
 
     const loadTasks = async (houseId: string) => {
@@ -396,14 +386,14 @@ export default function DashboardPage() {
                     <div className="flex items-center gap-2 md:gap-4">
                         {notificationStatus !== 'granted' && (
                             <Button
-                                variant="outline"
+                                variant="ghost"
                                 size="sm"
                                 onClick={handleEnableNotifications}
-                                className="border-amber-500/50 bg-amber-500/10 text-amber-400 gap-2 px-3 relative"
+                                className="w-10 h-10 p-0 rounded-full hover:bg-violet-500/10 text-violet-400 group relative"
+                                title="Zapnout upozornění"
                             >
-                                <Bell className="w-4 h-4" />
-                                <span className="hidden sm:inline">Notifikace</span>
-                                <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-ping" />
+                                <Bell className="w-5 h-5" />
+                                <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-500 rounded-full animate-pulse" />
                             </Button>
                         )}
                         {profile?.role === 'parent' && (
@@ -499,27 +489,14 @@ export default function DashboardPage() {
                     </div>
                 )}
 
-                {/* Debug Notification Bar */}
-                <div className="mb-8 p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl flex flex-col md:flex-row items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-amber-500/20 rounded-full flex items-center justify-center text-amber-500">
-                            <Bell className="w-5 h-5" />
-                        </div>
-                        <div>
-                            <p className="font-bold text-amber-200">Stav oznámení: {notificationStatus}</p>
-                            <p className="text-[10px] text-amber-500/80">
-                                VAPID Klíč: {process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY ? `Nalezen (${process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY.substring(0, 5)}...)` : "NENALEZEN!"}
-                            </p>
-                            <p className="text-xs text-amber-500/80">Pro zasílání úkolů musíte povolit upozornění.</p>
-                        </div>
-                    </div>
-                    <Button
-                        variant="primary"
-                        onClick={handleEnableNotifications}
-                        className="w-full md:w-auto bg-amber-500 hover:bg-amber-600 text-black border-none"
-                    >
-                        Povolit upozornění
-                    </Button>
+                {/* Action Header */}
+                <div className="flex justify-between items-end mb-6">
+                    <h2 className="text-2xl font-bold font-outfit uppercase tracking-wider text-slate-400">Dostupné Questy</h2>
+                    {profile?.role === 'parent' && (
+                        <Button size="sm" onClick={() => setIsCreateTaskOpen(true)} className="rounded-full px-6">
+                            <Plus className="w-4 h-4 mr-1" /> Nový Quest
+                        </Button>
+                    )}
                 </div>
 
                 {/* Task List */}
