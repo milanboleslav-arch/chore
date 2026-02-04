@@ -84,7 +84,7 @@ export default function LandingPage() {
 
         <h1 className="text-6xl md:text-8xl font-black font-outfit leading-tight mb-8 tracking-tighter">
           Proměňte úkoly <br />
-          <span className="text-gradient">v epické questy</span>
+          <span className="text-gradient">v epické úkoly</span>
         </h1>
 
         <p className="text-xl text-slate-400 max-w-2xl mx-auto mb-12 leading-relaxed">
@@ -146,7 +146,7 @@ export default function LandingPage() {
                   </div>
                 </div>
                 <div className="px-3 py-1 bg-violet-500/20 text-violet-400 border border-violet-500/30 rounded-lg text-xs font-bold uppercase tracking-wider">
-                  Quest
+                  Úkol
                 </div>
               </div>
 

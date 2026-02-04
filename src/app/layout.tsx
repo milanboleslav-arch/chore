@@ -14,7 +14,7 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   title: "Chore | Level Up Your Home",
-  description: "The ultimate gamified task management system for families. Turn chores into quests, earn rewards, and stay organized.",
+  description: "The ultimate gamified task management system for families. Turn chores into tasks, earn rewards, and stay organized.",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,

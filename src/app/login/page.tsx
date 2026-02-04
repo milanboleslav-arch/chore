@@ -72,7 +72,7 @@ export default function LoginPage() {
                         <span className="text-3xl font-bold font-outfit uppercase tracking-tighter">Chore</span>
                     </Link>
                     <h1 className="text-3xl font-bold font-outfit mb-2">Vítejte zpět</h1>
-                    <p className="text-slate-400">Vaše questy na vás čekají</p>
+                    <p className="text-slate-400">Vaše úkoly na vás čekají</p>
                 </div>
 
                 <Card className="p-8">

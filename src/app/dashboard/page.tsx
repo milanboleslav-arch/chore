@@ -491,10 +491,10 @@ export default function DashboardPage() {
 
                 {/* Action Header */}
                 <div className="flex justify-between items-end mb-6">
-                    <h2 className="text-2xl font-bold font-outfit uppercase tracking-wider text-slate-400">Dostupné Questy</h2>
+                    <h2 className="text-2xl font-bold font-outfit uppercase tracking-wider text-slate-400">Dostupné úkoly</h2>
                     {profile?.role === 'parent' && (
                         <Button size="sm" onClick={() => setIsCreateTaskOpen(true)} className="rounded-full px-6">
-                            <Plus className="w-4 h-4 mr-1" /> Nový Quest
+                            <Plus className="w-4 h-4 mr-1" /> Nový úkol
                         </Button>
                     )}
                 </div>
@@ -608,7 +608,7 @@ export default function DashboardPage() {
                                                         className="flex-1 py-2 text-sm rounded-lg shadow-lg"
                                                         onClick={() => handleCompleteTask(task.id)}
                                                     >
-                                                        Splnit Quest
+                                                        Splnit úkol
                                                     </Button>
                                                 )}
                                             </div>

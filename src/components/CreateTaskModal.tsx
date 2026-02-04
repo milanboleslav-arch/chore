@@ -106,7 +106,7 @@ export const CreateTaskModal = ({ isOpen, onClose, houseId, onTaskCreated }: Cre
                                 <X className="w-4 h-4" />
                             </Button>
 
-                            <h2 className="text-2xl font-bold font-outfit mb-6">Nový Quest (Úkol)</h2>
+                            <h2 className="text-2xl font-bold font-outfit mb-6">Nový Úkol</h2>
 
                             <form onSubmit={handleSubmit} className="space-y-5">
                                 <div className="space-y-2">
@@ -177,7 +177,7 @@ export const CreateTaskModal = ({ isOpen, onClose, houseId, onTaskCreated }: Cre
                                         onChange={(e) => setAssignedTo(e.target.value)}
                                         className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-violet-500 transition-colors appearance-none"
                                     >
-                                        <option value="" className="bg-[#0f111a]">Kdokoliv (veřejný quest)</option>
+                                        <option value="" className="bg-[#0f111a]">Kdokoliv (veřejný úkol)</option>
                                         {members.map((member) => (
                                             <option key={member.id} value={member.id} className="bg-[#0f111a]">
                                                 {member.full_name} ({member.role === 'child' ? 'Dítě' : 'Rodič'})
@@ -209,7 +209,7 @@ export const CreateTaskModal = ({ isOpen, onClose, houseId, onTaskCreated }: Cre
                                 </div>
 
                                 <Button type="submit" className="w-full h-14 text-lg" loading={loading}>
-                                    Vytvořit Quest
+                                    Vytvořit Úkol
                                 </Button>
                             </form>
                         </Card>
